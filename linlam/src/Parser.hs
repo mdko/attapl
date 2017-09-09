@@ -1,4 +1,4 @@
-module Parser (parseProgram) where
+module Parser (parseLL) where
 
 import Text.ParserCombinators.Parsec
 import Text.ParserCombinators.Parsec.Language (emptyDef)
@@ -6,14 +6,15 @@ import Text.ParserCombinators.Parsec.Token as P
 import Syntax
 
 defLL = emptyDef
-  { commentStart = "{-"
-  , commentEnd = "-}"
-  , identStart = lower <|> char '_'
-  , identLetter = alphaNum <|> oneOf "_'"
-  , opStart = oneOf "\\.:"
-  , opLetter = oneOf "\\.:"
-  , reservedOpNames = ["\\", ".", ":"]
-  , reservedNames = ["if", "then", "else", "split", "as", "in", "True", "False"]
+  { P.commentStart = "{-"
+  , P.commentEnd = "-}"
+  , P.commentLine = "--"
+  , P.identStart = lower <|> char '_'
+  , P.identLetter = alphaNum <|> oneOf "_'"
+  , P.opStart = oneOf "\\.:"
+  , P.opLetter = oneOf "\\.:"
+  , P.reservedOpNames = ["\\", ".", ":"]
+  , P.reservedNames = ["if", "then", "else", "split", "as", "in", "True", "False"]
   }
 
 lexerLL = makeTokenParser defLL
@@ -27,12 +28,20 @@ colonLL = P.colon lexerLL
 dotLL = P.dot lexerLL
 symbolLL = P.symbol lexerLL
 opLL = P.operator lexerLL
+whitespaceLL = P.whiteSpace lexerLL
 
-parseProgram :: String -> Term
-parseProgram prog = do
-  case (parse parseTerm "term" prog) of
+parseLL :: String -> Term
+parseLL prog = do
+  case (parse parseProgram "program" prog) of
     Left err -> error $ "unable to parse: " ++ show err
     Right t -> t
+
+parseProgram :: Parser Term
+parseProgram = do
+  whitespaceLL
+  term <- parseTerm
+  eof
+  return term
 
 parseTerm :: Parser Term
 parseTerm

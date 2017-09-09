@@ -8,7 +8,8 @@ import Control.Monad.Except
 type LS a = ExceptT LLException (State Context) a
 
 data LLException = IlltypedException String
-  deriving (Show)
+instance Show LLException where
+  show (IlltypedException s) = "illtyped: " ++ s
 instance Eq LLException where
   IlltypedException _ == IlltypedException _ = True
 instance Exception LLException
@@ -17,10 +18,10 @@ typecheck :: Term -> Either LLException Type
 typecheck t = evalState (runExceptT $ check t) []
 
 getCtx :: LS Context
-getCtx = lift $ get -- TODO check what's going on here
+getCtx = lift $ get
 
 setCtx :: Context -> LS ()
-setCtx = lift . put -- TODO also check
+setCtx = lift . put
 
 check :: Term -> LS Type
 check (TVar x) = do

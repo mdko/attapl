@@ -19,34 +19,41 @@ unitTests = testGroup "Unit tests" [parseTests, checkerTests, evalTests]
 parseTests :: TestTree
 parseTests = testGroup "Parse tests"
  [ testCase "parse var single char" $
-   (parseProgram "x") @?= (TVar $ Var "x")
+   (parseLL "x") @?= (TVar $ Var "x")
  , testCase "parse var multiple chars" $
-   (parseProgram "x0") @?= (TVar $ Var "x0")
+   (parseLL "x0") @?= (TVar $ Var "x0")
  , testCase "parse var underscore" $
-   (parseProgram "_x") @?= (TVar $ Var "_x")
+   (parseLL "_x") @?= (TVar $ Var "_x")
  , testCase "parse bool true unrestricted" $
-   (parseProgram "True[u]") @?= (TBool Unrestricted BTrue)
+   (parseLL "True[u]") @?= (TBool Unrestricted BTrue)
  , testCase "parse bool true linear" $
-   (parseProgram "True[l]") @?= (TBool Linear BTrue)
+   (parseLL "True[l]") @?= (TBool Linear BTrue)
  , testCase "parse bool false unrestricted" $
-   (parseProgram "False[u]") @?= (TBool Unrestricted BFalse)
+   (parseLL "False[u]") @?= (TBool Unrestricted BFalse)
  , testCase "parse bool false linear" $
-   (parseProgram "False[l]") @?= (TBool Linear BFalse)
+   (parseLL "False[l]") @?= (TBool Linear BFalse)
  , testCase "parse if" $
-   (parseProgram "if True[u] then False[u] else True[u]") @?=
+   (parseLL "if True[u] then False[u] else True[u]") @?=
    (TIf (TBool Unrestricted BTrue) (TBool Unrestricted BFalse) (TBool Unrestricted BTrue))
  , testCase "parse pair" $
-   (parseProgram "<True[u], False[l]>[u]") @?=
+   (parseLL "<True[u], False[l]>[u]") @?=
    (TPair Unrestricted (TBool Unrestricted BTrue) $ TBool Linear BFalse)
  , testCase "parse split" $
-   (parseProgram "split <True[u], False[l]>[u] as x,y in x") @?=
+   (parseLL "split <True[u], False[l]>[u] as x,y in x") @?=
    (TSplit (TPair Unrestricted (TBool Unrestricted BTrue) (TBool Linear BFalse))
            (Var "x") (Var "y") (TVar $ Var "x"))
  , testCase "parse abs" $
-   (parseProgram "\\ [u] x: Bool[l]. x") @?=
+   (parseLL "\\ [u] x: Bool[l]. x") @?=
    (TAbs Unrestricted (Var "x") (Type Linear PBool) $ TVar $ Var "x")
+{- TODO: Need to fix parsing for this to work
+ , testCase "parse abs accepting func" $
+   (parseLL "\\ [u] f: (Bool[u] -> Bool[u])[l]. (f) True[u]") @?=
+   (TAbs Unrestricted (Var "f") (Type Linear $ PFunc (Type Unrestricted PBool)
+                                                     (Type Unrestricted PBool))
+                                (TApp (TVar $ Var "f") (TBool Unrestricted BTrue)))
+-}
  , testCase "parse app" $
-   (parseProgram "(\\ [u] x: Bool[l]. x) True[u]") @?=
+   (parseLL "(\\ [u] x: Bool[l]. x) True[u]") @?=
    (TApp (TAbs Unrestricted (Var "x") (Type Linear PBool) $ TVar $ Var "x")
     (TBool Unrestricted BTrue))
  ]

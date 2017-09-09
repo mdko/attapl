@@ -1,0 +1,1 @@
+(\[u] f: (Bool[u] -> Bool[u])[l]. (f) True[u]) (\[l] b: Bool[u]. if b then False[u] else True[u])
