@@ -45,17 +45,17 @@ parseTests = testGroup "Parse tests"
  , testCase "parse abs" $
    (parseLL "\\ [u] x: Bool[l]. x") @?=
    (TAbs Unrestricted (Var "x") (Type Linear PBool) $ TVar $ Var "x")
-{- TODO: Need to fix parsing for this to work
  , testCase "parse abs accepting func" $
-   (parseLL "\\ [u] f: (Bool[u] -> Bool[u])[l]. (f) True[u]") @?=
+   (parseLL "\\ [u] f: (Bool[u] -> Bool[u])[l]. apply f to True[u]") @?=
    (TAbs Unrestricted (Var "f") (Type Linear $ PFunc (Type Unrestricted PBool)
                                                      (Type Unrestricted PBool))
                                 (TApp (TVar $ Var "f") (TBool Unrestricted BTrue)))
--}
  , testCase "parse app" $
-   (parseLL "(\\ [u] x: Bool[l]. x) True[u]") @?=
+   (parseLL "apply (\\ [u] x: Bool[l]. x) to True[u]") @?=
    (TApp (TAbs Unrestricted (Var "x") (Type Linear PBool) $ TVar $ Var "x")
     (TBool Unrestricted BTrue))
+ , testCase "parse parens" $
+   (parseLL "(True[l])") @?= (TBool Linear BTrue)
  ]
 
 checkerTests :: TestTree

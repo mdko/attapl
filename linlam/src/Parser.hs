@@ -14,7 +14,7 @@ defLL = emptyDef
   , P.opStart = oneOf "\\.:"
   , P.opLetter = oneOf "\\.:"
   , P.reservedOpNames = ["\\", ".", ":"]
-  , P.reservedNames = ["if", "then", "else", "split", "as", "in", "True", "False"]
+  , P.reservedNames = ["if", "then", "else", "split", "as", "in", "True", "False", "apply", "to"]
   }
 
 lexerLL = makeTokenParser defLL
@@ -29,6 +29,7 @@ dotLL = P.dot lexerLL
 symbolLL = P.symbol lexerLL
 opLL = P.operator lexerLL
 whitespaceLL = P.whiteSpace lexerLL
+bracesLL = P.braces lexerLL
 
 parseLL :: String -> Term
 parseLL prog = do
@@ -45,8 +46,8 @@ parseProgram = do
 
 parseTerm :: Parser Term
 parseTerm
-  =   {-parensLL parseTerm -- TODO get recursive parsing right (with 'buildExpressionParser'?)
-  <|>-} fmap TVar parseVar
+  =   parensLL parseTerm
+  <|> fmap TVar parseVar
   <|> parseBool
   <|> parseIf
   <|> parsePair
@@ -111,9 +112,12 @@ parseAbs = do
   t2 <- parseTerm
   return $ TAbs q x typ t2
 
+-- TODO: a hack, tired of dealing with parsing/ambiguity
 parseApp :: Parser Term
 parseApp = do
-  t1 <- parensLL parseTerm
+  reservedLL "apply"
+  t1 <- parseTerm
+  reservedLL "to"
   t2 <- parseTerm
   return $ TApp t1 t2
 
@@ -134,7 +138,7 @@ parsePretype :: Parser Pretype
 parsePretype
   =   parseBoolType
   <|> parsePairType
-  <|> parseFuncType
+  <|> parensLL parseFuncType
 
 parseBoolType :: Parser Pretype
 parseBoolType = do
