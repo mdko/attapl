@@ -1,0 +1,11 @@
+main: jump prod
+
+prod: r3 := 0;
+      jump loop
+
+loop: if r1 jump done;
+      r3 := r2 + r3;
+      r1 := r1 + -1;
+      jump loop
+
+done: halt
