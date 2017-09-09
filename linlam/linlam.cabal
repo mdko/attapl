@@ -1,0 +1,48 @@
+name:                linlam
+version:             0.1.0.0
+-- synopsis:
+-- description:
+homepage:            https://github.com/githubuser/linlam#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Michael Christensen
+maintainer:          chmdko@gmail.com.com
+copyright:           2017 Michael Christensen
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.10
+extra-source-files:  README.md
+
+executable linlam
+  hs-source-dirs:      src
+  main-is:             Main.hs
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     , containers
+                     , transformers
+                     , parsec
+                     , MissingH
+                     , mtl
+  other-modules:       Syntax
+                     , Parser
+                     , Interpreter
+                     , Checker
+
+test-suite linlam-test
+  type:                exitcode-stdio-1.0
+  main-is:             Spec.hs
+  hs-source-dirs:      test
+                     , src
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     , tasty
+                     , tasty-hunit
+                     , parsec
+                     , MissingH
+                     , transformers
+                     , containers
+                     , mtl
+  other-modules:       Syntax
+                     , Parser
+                     , Interpreter
+                     , Checker
