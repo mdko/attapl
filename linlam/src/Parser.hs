@@ -32,7 +32,7 @@ whitespaceLL = P.whiteSpace lexerLL
 bracesLL = P.braces lexerLL
 
 parseLL :: String -> Term
-parseLL prog = do
+parseLL prog =
   case (parse parseProgram "program" prog) of
     Left err -> error $ "unable to parse: " ++ show err
     Right t -> t

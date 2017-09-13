@@ -2,7 +2,7 @@ module Checker (typecheck, LLException(..)) where
 
 import Syntax
 import Control.Monad.Trans.State.Lazy
-import Control.Exception (Exception, throw, try)
+import Control.Exception (Exception)
 import Control.Monad.Except
 
 type LS a = ExceptT LLException (State Context) a

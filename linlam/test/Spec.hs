@@ -18,45 +18,45 @@ unitTests = testGroup "Unit tests" [parseTests, checkerTests, evalTests]
 
 parseTests :: TestTree
 parseTests = testGroup "Parse tests"
- [ testCase "parse var single char" $
-   (parseLL "x") @?= (TVar $ Var "x")
- , testCase "parse var multiple chars" $
-   (parseLL "x0") @?= (TVar $ Var "x0")
- , testCase "parse var underscore" $
-   (parseLL "_x") @?= (TVar $ Var "_x")
- , testCase "parse bool true unrestricted" $
-   (parseLL "True[u]") @?= (TBool Unrestricted BTrue)
- , testCase "parse bool true linear" $
-   (parseLL "True[l]") @?= (TBool Linear BTrue)
- , testCase "parse bool false unrestricted" $
-   (parseLL "False[u]") @?= (TBool Unrestricted BFalse)
- , testCase "parse bool false linear" $
-   (parseLL "False[l]") @?= (TBool Linear BFalse)
- , testCase "parse if" $
-   (parseLL "if True[u] then False[u] else True[u]") @?=
-   (TIf (TBool Unrestricted BTrue) (TBool Unrestricted BFalse) (TBool Unrestricted BTrue))
- , testCase "parse pair" $
-   (parseLL "<True[u], False[l]>[u]") @?=
-   (TPair Unrestricted (TBool Unrestricted BTrue) $ TBool Linear BFalse)
- , testCase "parse split" $
-   (parseLL "split <True[u], False[l]>[u] as x,y in x") @?=
-   (TSplit (TPair Unrestricted (TBool Unrestricted BTrue) (TBool Linear BFalse))
-           (Var "x") (Var "y") (TVar $ Var "x"))
- , testCase "parse abs" $
-   (parseLL "\\ [u] x: Bool[l]. x") @?=
-   (TAbs Unrestricted (Var "x") (Type Linear PBool) $ TVar $ Var "x")
- , testCase "parse abs accepting func" $
-   (parseLL "\\ [u] f: (Bool[u] -> Bool[u])[l]. apply f to True[u]") @?=
-   (TAbs Unrestricted (Var "f") (Type Linear $ PFunc (Type Unrestricted PBool)
-                                                     (Type Unrestricted PBool))
-                                (TApp (TVar $ Var "f") (TBool Unrestricted BTrue)))
- , testCase "parse app" $
-   (parseLL "apply (\\ [u] x: Bool[l]. x) to True[u]") @?=
-   (TApp (TAbs Unrestricted (Var "x") (Type Linear PBool) $ TVar $ Var "x")
-    (TBool Unrestricted BTrue))
- , testCase "parse parens" $
-   (parseLL "(True[l])") @?= (TBool Linear BTrue)
- ]
+  [ testCase "parse var single char" $
+    (parseLL "x") @?= (TVar $ Var "x")
+  , testCase "parse var multiple chars" $
+    (parseLL "x0") @?= (TVar $ Var "x0")
+  , testCase "parse var underscore" $
+    (parseLL "_x") @?= (TVar $ Var "_x")
+  , testCase "parse bool true unrestricted" $
+    (parseLL "True[u]") @?= (TBool Unrestricted BTrue)
+  , testCase "parse bool true linear" $
+    (parseLL "True[l]") @?= (TBool Linear BTrue)
+  , testCase "parse bool false unrestricted" $
+    (parseLL "False[u]") @?= (TBool Unrestricted BFalse)
+  , testCase "parse bool false linear" $
+    (parseLL "False[l]") @?= (TBool Linear BFalse)
+  , testCase "parse if" $
+    (parseLL "if True[u] then False[u] else True[u]") @?=
+    (TIf (TBool Unrestricted BTrue) (TBool Unrestricted BFalse) (TBool Unrestricted BTrue))
+  , testCase "parse pair" $
+    (parseLL "<True[u], False[l]>[u]") @?=
+    (TPair Unrestricted (TBool Unrestricted BTrue) $ TBool Linear BFalse)
+  , testCase "parse split" $
+    (parseLL "split <True[u], False[l]>[u] as x,y in x") @?=
+    (TSplit (TPair Unrestricted (TBool Unrestricted BTrue) (TBool Linear BFalse))
+            (Var "x") (Var "y") (TVar $ Var "x"))
+  , testCase "parse abs" $
+    (parseLL "\\ [u] x: Bool[l]. x") @?=
+    (TAbs Unrestricted (Var "x") (Type Linear PBool) $ TVar $ Var "x")
+  , testCase "parse abs accepting func" $
+    (parseLL "\\ [u] f: (Bool[u] -> Bool[u])[l]. apply f to True[u]") @?=
+    (TAbs Unrestricted (Var "f") (Type Linear $ PFunc (Type Unrestricted PBool)
+                                                      (Type Unrestricted PBool))
+                                 (TApp (TVar $ Var "f") (TBool Unrestricted BTrue)))
+  , testCase "parse app" $
+    (parseLL "apply (\\ [u] x: Bool[l]. x) to True[u]") @?=
+    (TApp (TAbs Unrestricted (Var "x") (Type Linear PBool) $ TVar $ Var "x")
+     (TBool Unrestricted BTrue))
+  , testCase "parse parens" $
+    (parseLL "(True[l])") @?= (TBool Linear BTrue)
+  ]
 
 checkerTests :: TestTree
 checkerTests = testGroup "Typechecker tests"
