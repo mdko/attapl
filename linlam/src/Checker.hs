@@ -76,10 +76,11 @@ check (TAbs q x typ1 t2) = do
   setCtx $ ctx1 ++ [(x, typ1)]
   typ2 <- check t2
   ctx2 <- getCtx
-  if (q == Unrestricted && ctx1 /= ctx2)
+  ctx2_div <- ctx2 `ctxDiv` [(x, typ1)]
+  if (q == Unrestricted && ctx1 /= ctx2_div)
   then throwError $ IlltypedException "input and output contexts of unrestricted function abstraction unequal"
   else do
-    setCtx <$> ctx2 `ctxDiv` [(x, typ1)]
+    setCtx ctx2_div
     return $ Type q $ PFunc typ1 typ2
 check (TApp t1 t2) = do
   typ1 <- check t1

@@ -112,10 +112,10 @@ checkerTests = testGroup "Typechecker tests"
                              (Var "x") (Var "y")
                              (TVar $ Var "x")) @?=
     Right (Type Linear PBool)
-  , testCase "check abs (illtyped b/c unres func has lin var in body)" $
+  , testCase "check abs (welltyped: unres func with unres parameter returning new lin bool)" $
     typecheck (TAbs Unrestricted (Var "x") (Type Unrestricted PBool)
                 (TBool Linear BTrue)) @?=
-    Left (IlltypedException "input and output contexts of unrestricted function abstraction unequal")
+    Right (Type Unrestricted (PFunc (Type Unrestricted PBool) (Type Linear PBool)))
   , testCase "check abs (illtyped: unres func with unused linear param)" $
     typecheck (TAbs Unrestricted (Var "x") (Type Linear PBool)
                 (TBool Linear BTrue)) @?=
